@@ -1,0 +1,171 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/gin-gonic/gin"
+)
+
+type PostParams struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+	Sex  bool   `json:"sex"`
+}
+
+// 全局中间件
+func MiddleWare() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		fmt.Println("before middleware1")
+		c.Set("request", "clinet_request")
+		c.Next()
+		fmt.Println("before middleware2")
+	}
+}
+func main() {
+
+	//Default返回一个默认的路由引擎
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	// 此规则能够匹配/user/john这种格式，但不能匹配/user/ 或 /user这种格式
+	// 但是，*action这个规则既能匹配/user/john/格式也能匹配/user/john/send这种格式
+	// 如果没有其他路由器匹配/user/john，它将重定向到/user/john/
+	r.GET("/user/:name/*action", func(c *gin.Context) {
+		log.Printf(c.Param("action"))
+		name := c.Param("name")
+		action := c.Param("action")
+		message := name + " is " + action
+		c.String(200, "Hello %s", message)
+	})
+
+	// 获取Get参数
+	//  匹配的url格式:  /welcome?firstname=Jane&lastname=Doe
+	r.GET("/welcome", func(c *gin.Context) {
+		firstname := c.DefaultQuery("firstname", "Gusest") // 默认参数
+		lastname := c.Query("lastname")                    // 是 c.Request.URL.Query().Get("lastname") 的简写
+
+		c.String(200, "Hello %s %s", firstname, lastname)
+	})
+
+	// 获取Post参数
+	//  匹配的url格式:  /welcome?firstname=Jane&lastname=Doe
+	r.POST("/form_post", func(c *gin.Context) {
+		message := c.DefaultPostForm("message", "Gusest") // 带默认参数
+		nick := c.PostForm("nick")                        // 是 c.Request.URL.Query().Get("lastname") 的简写
+		c.JSON(200, gin.H{
+			"status":  "posted",
+			"message": message,
+			"nick":    nick,
+		})
+
+	})
+	r.POST("/path", func(c *gin.Context) {
+		user := c.PostForm("user")
+
+		pwd := c.PostForm("pwd")
+		c.JSON(200, gin.H{
+			"user":    user,
+			"pwd":     pwd,
+			"message": "哈哈哈",
+		})
+	})
+	// 上传单个文件
+	// 给表单限制上传大小 (默认 32 MiB)
+	// r.MaxMultipartMemory = 8 << 20  // 8 MiB
+	r.POST("/upload", func(c *gin.Context) {
+		name := c.PostForm("name")
+		fmt.Println(name)
+		// 单文件
+		file, header, err := c.Request.FormFile("upload")
+		log.Println(header.Filename)
+		if err != nil {
+			c.String(http.StatusBadRequest, "Bad request")
+			return
+		}
+		filename := header.Filename
+
+		fmt.Println(file, err, filename)
+
+		out, err := os.Create(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer out.Close()
+		_, err = io.Copy(out, file)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// 上传文件到指定的路径
+		// c.SaveUploadedFile(file, dst)
+
+		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", header.Filename))
+		// c.JSON(200, gin.H{
+		// 	"message": "upload success",
+		// })
+	})
+	// 上传多个文件
+	r.POST("/multi/upload", func(c *gin.Context) {
+		err := c.Request.ParseMultipartForm(200000)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		formdata := c.Request.MultipartForm
+
+		files := formdata.File["upload"]
+		for i, _ := range files {
+			file, err := files[i].Open()
+			defer file.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			out, err := os.Create(files[i].Filename)
+
+			defer out.Close()
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_, err = io.Copy(out, file)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			c.String(http.StatusCreated, "upload successful")
+
+		}
+
+	})
+
+	//  渲染文件
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/upload", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "upload.html", gin.H{})
+	})
+
+	// 使用中间件
+	r.Use(MiddleWare())
+	{
+		r.GET("/middleware", func(c *gin.Context) {
+			request := c.MustGet("request").(string)
+			req, _ := c.Get("request")
+			c.JSON(http.StatusOK, gin.H{
+				"middile_request": request,
+				"request":         req,
+			})
+		})
+	}
+
+	r.Run() // listen and serve on 0.0.0.0:8080
+}

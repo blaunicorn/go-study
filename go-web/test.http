@@ -1,0 +1,60 @@
+# POST http://localhost:8080/user/ HTTP/1.1
+# content-type: application/json
+
+# {
+#     "id": ,
+#     "username": "Wed"
+# }
+
+
+# PATCH  http://localhost:8080/user/2 HTTP/1.1
+# content-type: application/json
+
+# {
+#     # "id": 222,
+#     "username": "Wed1"
+# }
+
+
+# DELETE  http://localhost:8080/user/2 HTTP/1.1
+# content-type: application/json
+
+
+# GET   http://localhost:8080/user/21 HTTP/1.1
+# content-type: application/json
+
+POST http://localhost:8081/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": ,
+    "username": "Wed"
+}
+###
+
+POST http://localhost:8081/weather/ HTTP/1.1
+content-type: application/json
+Authorization: a token example
+# Authorization: token yyeryeryt46545y
+# Content-Type 和 json字符串中间必须有一个空行 url和conten-type之间不能有空行,负责报错
+
+{
+    "id": 1,
+    "username": "Wed"
+}
+###
+
+GET   http://localhost:8082/user/ HTTP/1.1
+content-type: application/json
+###
+
+
+
+POST http://localhost:8082/user/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": 31,
+    "11": ""
+}
+###
