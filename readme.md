@@ -4,6 +4,7 @@ Golang Web 实战
 20210906 实践
 /go-web
 https://blog.csdn.net/weixin_41818794/article/details/104393704
+完成 go 的 mongodb redis postgres 数据库的增删改查
 
 gin 框架基础教学
 https://www.bilibili.com/video/BV12i4y1x7AG

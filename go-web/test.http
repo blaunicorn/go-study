@@ -54,7 +54,29 @@ POST http://localhost:8082/user/ HTTP/1.1
 content-type: application/json
 
 {
-    "id": 31,
-    "11": ""
+    # "id": 31,
+    "username": "test022"
 }
+###
+
+PATCH  http://localhost:8082/user/06/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": 6,
+    "username": "test0006"
+}
+###
+
+DELETE  http://localhost:8082/user/4/ HTTP/1.1
+content-type: application/json
+
+###
+
+GET   http://localhost:8082/user/30/ HTTP/1.1
+content-type: application/json
+###
+
+GET   http://localhost:8082/visit-log/ HTTP/1.1
+content-type: application/json
 ###

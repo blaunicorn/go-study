@@ -1,3 +1,3 @@
-module class01
+module blog
 
 go 1.16

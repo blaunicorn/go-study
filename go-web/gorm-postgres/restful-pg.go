@@ -30,7 +30,7 @@ func init() {
 		),
 	)
 
-	db.SingularTable(true)
+	db.SingularTable(true) // 让grom转义struct名字的时候不用加上s
 	db.LogMode(true)
 	db.DB().SetConnMaxLifetime(10 * time.Second)
 	db.DB().SetMaxIdleConns(30)
@@ -85,6 +85,10 @@ func post(c *gin.Context) {
 		c.JSON(500, gin.H{"message": "用户名为空"})
 		return
 	}
+	if user.Id != 0 {
+		c.JSON(500, gin.H{"message": "用户Id不为空"})
+		return
+	}
 	if e := db.Raw("insert into user_info(username) values(?) returning *", user.Username).Scan(&user).Error; e != nil {
 		c.JSON(500, gin.H{"message": e.Error()})
 		return
@@ -98,16 +102,27 @@ func patch(c *gin.Context) {
 	c.Bind(&user)
 	id := c.Param("id")
 	db.Raw("update user_info set username=? where id=? returning *", user.Username, id).Scan(&user)
-	c.JSON(200, user)
+	// c.JSON(200, user)
+	c.JSON(200, gin.H{"message": "success", "user": user})
 }
 func deleteById(c *gin.Context) {
 	id := c.Param("id")
-	db.Exec("delete from user_info where id=?", id)
+	// db.Exec("delete from user_info where id=?", id)
+	err := db.Exec("delete from user_info where id=?", id)
+	if err != nil {
+		fmt.Println(&err.Error)
+		c.JSON(200, gin.H{"message": "fail"})
+		return
+	}
 	c.JSON(200, gin.H{"message": "success"})
 }
 func getOne(c *gin.Context) {
 	var user User
 	id := c.Param("id")
 	db.Raw("select * from user_info where id=?", id).Scan(&user)
-	c.JSON(200, user)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	c.JSON(200, gin.H{"message": "success", "user": user})
 }

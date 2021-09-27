@@ -186,3 +186,66 @@ systemctl stop firewalld.service
 ```
 systemctl start firewalld.service
 ```
+
+# redis 配置
+
+一、cenOS 7 安装 redis
+Redis 是一个开源的内存数据结构存储库，具有用于持久性的可选磁盘写入。它可以用作键值数据库，也可以用作缓存和消息代理。
+Redis 具有内置事务，复制和对各种数据结构（如字符串，哈希，列表，集等）的支持。Redis 可以通过 Redis Sentinel 高度可用，
+并支持使用 Redis Cluster 自动分区。
+
+在本节中，您将添加 EPEL 存储库，然后使用它来安装 Redis。
+
+1.1 添加 EPEL 存储库，并更新 YUM 以确认您的更改：
+sudo yum install epel-release sudo yum update
+1
+1.2 安装 Redis：
+sudo yum install redis
+1
+1.3 启动 Redis：
+sudo systemctl start redis
+1
+1.4 可选：要在启动时自动启动 Redis：
+sudo systemctl enable redis
+1
+1.5 验证 Redis 是否正在运行 redis-cli：
+redis-cli ping
+1
+如果 Redis 正在运行，它将返回：PONG
+
+二、Redis——配置允许远程连接
+防火墙添加 6379 端口
+确保防火墙开启了对 6379 端口的放行。
+修改 redis.conf
+在 redis.conf 中修改以下参数
+
+# 允许任何主机连接、访问
+
+bind 127.0.0.1 改为 bind 0.0.0.0
+
+# 关闭保护模式
+
+protected-mode yes 改为 protected-mode no
+
+# 允许启动后在后台运行，即关闭命令行窗口后仍能运行
+
+daemonize no 改为 daemonize yes
+
+修改完成后，重启 redis
+
+systemctl restart redis
+
+```
+127.0.0.1 => 0.0.0.0
+port 6379
+requirepass 123456
+```
+
+# Mongo
+
+Mongo 和 Redis 一样，是内存数据库，对高并发的支持比 Redis 可用性更高，因为 Redis 是单线程的。
+
+Mongo 的业务场景面向一些量级很大（未来可能会变得很大）的数据，下面我们在前面的 restful-redis-pg 的基础上，增加一个访问日志记录，这些日志被记入 Mongo。
+
+Mongo 除了快以外，还有一个好处，如果 DB 和 Collection 不存在时，会自动创建。
+mongodb://admin:123qwe@81.70.104.105:27017/testdb
