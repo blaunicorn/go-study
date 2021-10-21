@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-var C int = 2
+// var C int = 2
 
 // func ()  {
 

@@ -2,16 +2,20 @@ package main
 
 import (
 	// 需要从go.mod文件作为绝对路径import。并且路径开头应该是module名，不是目录名
-	// 此文中是blog
-	// "blog/testpackage"  // 直接引用
-	// root "blog/testpackage"  // 别名引入
+	// 此文中是go-study-demo
+	// "go-study-demo/testpackage"  // 直接引用
+	// root "go-study-demo/testpackage"  // 别名引入
+	. "go-study-demo/testpackage" // 隐式引用
 
-	. "blog/testpackage" // 隐式引用
-	"fmt"
+	"fmt" // 隐式引用
+
 	"sync"
 )
 
 func main() {
+
+	// SyncClass()
+	// fileTest()
 	// 显式变量声明
 	// var a string = "10101"
 	// 隐式变量声明

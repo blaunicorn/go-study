@@ -1,5 +1,7 @@
 # go-study
 
+go 编程基础及博客项目[https://www.bilibili.com/video/BV1Cz4y1273j]
+
 Golang Web 实战
 20210906 实践
 /go-web

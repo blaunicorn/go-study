@@ -1,0 +1,4 @@
+github.com/larspensjo/config v0.0.0-20160228172812-b6db95dc6321 h1:HuvFF+bNfti7Q3taQTLox7YntC2IzUzM8pn2zyRTn98=
+github.com/larspensjo/config v0.0.0-20160228172812-b6db95dc6321/go.mod h1:2tvhHYSOp38Gz/nhlXdCBepDFHG1/GCI0nuk4Dv9EyM=
+github.com/tarm/goserial v0.0.0-20151007205400-b3440c3c6355 h1:Kp3kg8YL2dc75mckomrHZQTfzNyFGnaqFhJeQw4ozGc=
+github.com/tarm/goserial v0.0.0-20151007205400-b3440c3c6355/go.mod h1:jcMo2Odv5FpDA6rp8bnczbUolcICW6t54K3s9gOlgII=
