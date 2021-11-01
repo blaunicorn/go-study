@@ -95,7 +95,7 @@ yarn serve
 
 [video address]https://www.bilibili.com/video/BV1CE411H7bQ
 
-### first day
+### first section
 
 ```
 mkdir ginessential
@@ -132,3 +132,5 @@ go get -u gorm.io/gorm
 go get -u gorm.io/driver/sqlite
 
 ```
+
+### second section
