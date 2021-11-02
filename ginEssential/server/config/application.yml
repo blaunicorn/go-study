@@ -1,5 +1,5 @@
 server:
-  port: 1016
+  port: 8081
 datasource:
   driverName: mysql
   host: 81.70.77.41

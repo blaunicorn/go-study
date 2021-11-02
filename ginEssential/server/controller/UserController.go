@@ -157,11 +157,29 @@ import (
 // 第二版 ，增加状态码
 func Register(ctx *gin.Context) {
 	DB := common.GetDB()
+	// methods one: use map get parameters
+	// var requestMap = make(map[string]string)
+	// json.NewDecoder(ctx.Request.Body).Decode(&requestMap)
+	// fmt.Println(requestMap)
 
-	// get parameters
-	name := ctx.PostForm("name")
-	telephone := ctx.PostForm("telephone")
-	password := ctx.PostForm("password")
+	// methods two: use struct get parameters
+	// var requestUser = model.User{}
+	// json.NewDecoder(ctx.Request.Body).Decode(&requestUser)
+	// fmt.Println(requestUser)
+
+	// methods three: use struct get parameters
+	var requestUser = model.User{}
+	ctx.Bind(&requestUser)
+	fmt.Println(&requestUser)
+	//get Json parameters
+	name := requestUser.Name
+	telephone := requestUser.Telephone
+	password := requestUser.Password
+
+	// get  Form parameters
+	// name := ctx.PostForm("name")
+	// telephone := ctx.PostForm("telephone")
+	// password := ctx.PostForm("password")
 
 	// data validation
 	// gin.H == map[string]interface{}
@@ -217,9 +235,30 @@ func Register(ctx *gin.Context) {
 	DB.Create(&newUser)
 
 	// return results
+	// ctx.JSON(200, gin.H{
+	// 	"message": "success",
+	// })
+
+	// register success to send token
+	//  issue token
+	// token := "11"
+	token, err := common.ReleaseToken(newUser)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"msg":  "System exception",
+		})
+		log.Printf("token generate error : %v", err)
+		return
+	}
+
+	// return results
 	ctx.JSON(200, gin.H{
-		"message": "success",
+		"code":    200,
+		"message": "register success",
+		"data":    gin.H{"token": token},
 	})
+
 }
 
 func Login(ctx *gin.Context) {

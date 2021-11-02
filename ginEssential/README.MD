@@ -4,14 +4,16 @@
 
 ```
 |-- ginEssential
+  |--server  后端代码
     |-- common // 公用包
     |  |-- database.go //数据库
     |  |-- jwt   // 认证
     |-- util // 工具包
     |-- dto //数据传输对象
     |-- response // 统一返回格式
-  |-- main.go  //入口文件
-  |-- routes.go  // 路由
+    |-- main.go  //入口文件
+    |-- routes.go  // 路由
+  |--frontend  // 前端代码
 ```
 
 ## 一、项目内容
@@ -188,5 +190,88 @@ func Fail(ctx *gin.Context, data gin.H, msg string) {
 
 ```
 // viper module
+
+```
+
+8. 前端环境搭建
+
+```
+//  采用nvm 确保多个项目开发环境统一
+ nvm install v10.14.2
+ nvm ls
+ node -v
+ nvm user v12.16.1
+ node -v
+ node use v10.14.2
+node -v
+// install yarn
+ npm install -g yarn
+
+# install vue-cli
+ npm install -g @vue/cli
+# OR
+yarn global add @vue/cli
+```
+
+9. 创建 vue 项目代码规范
+
+```
+ vue create frontend
+eslintrc.js
+
+```
+
+10. 编写注册登录页面
+
+```
+yarn add vue bootstrap-vue
+yarn add bootstrap@4.5.3
+```
+
+11. 表单验证
+
+```
+// 三种方式
+// one
+              <b-form-text text-variant="danger" v-if="showTelephoneValidate"
+                >telephone must be 11 digits!
+              </b-form-text>
+
+                  register (event) {
+      event.preventDefault();
+      if (this.user.telephone.length !== 11) {
+        this.showTelephoneValidate = false;
+        return;
+      }
+      alert(JSON.stringify(this.user));
+    },
+// twor
+              <b-form-invalid-feedback :state="validation">
+                Your user password must be > 6 characters long.
+              </b-form-invalid-feedback>
+              <b-form-valid-feedback :state="validation">
+                Looks Good.
+              </b-form-valid-feedback>
+
+                  validation () {
+      return this.user.password.length > 6;
+    },
+// three
+yarn add vuelidate --save
+
+```
+
+12. axios 请求和 cros 设置
+
+```
+yarn add axios
+// 在入口main.js中导入axios 并将axios写入vue的原型，这样就能更简单的使用。
+
+import axios from 'axios'
+import Qs from 'qs'
+//QS是axios库中带的，不需要我们再npm安装一个
+
+Vue.prototype.axios = axios;
+Vue.prototype.qs = Qs;
 
 ```
