@@ -1,0 +1,10 @@
+server:
+  port: 1016
+datasource:
+  driverName: mysql
+  host: 81.70.77.41
+  port: 3306
+  database: gin_essential
+  username: gin_essential
+  password: rr4bsaDkbeSwj2tb
+  charset: utf8

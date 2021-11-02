@@ -1,24 +1,25 @@
-
-POST http://localhost:8081/login/ HTTP/1.1
-content-type: application/json
-
-{
-    "id": ,
-    "username": "Wed"
-}
-###
+// ginEssential api mock
 
 POST http://localhost:8080/api/auth/register HTTP/1.1
 content-type: application/x-www-form-urlencoded
 
 telephone=11111111111
-&password=adadadad
-&name=sdfsdfe
+&password=admin123
+&name=admin
 
 ###
 
-GET   http://localhost:8082/user/ HTTP/1.1
+POST http://localhost:8080/api/auth/login HTTP/1.1
+content-type: application/x-www-form-urlencoded
+
+telephone=11111111111
+&password=admin123
+
+###
+
+GET   http://localhost:8080/api/auth/info/ HTTP/1.1
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjEsImV4cCI6MTYzNjQyNTI2OSwiaWF0IjoxNjM1ODIwNDY5LCJpc3MiOiJvY2VhbmxlYXJuLnRlY2giLCJzdWIiOiJ1c2VyIHRva2VuIn0.NpkbXBS2BbKAZJVaR79YRAATgYqJllYiV8Be-0HmioQ
 ###
 
 

@@ -2,6 +2,18 @@
 
 # ginEssential
 
+```
+|-- ginEssential
+    |-- common // 公用包
+    |  |-- database.go //数据库
+    |  |-- jwt   // 认证
+    |-- util // 工具包
+    |-- dto //数据传输对象
+    |-- response // 统一返回格式
+  |-- main.go  //入口文件
+  |-- routes.go  // 路由
+```
+
 ## 一、项目内容
 
 基于 gin 框架的 demo 项目,本项目基于 B 站视频 Go 语言 Gin+Vue 前后端分离实战 - OceanLearn
@@ -95,7 +107,7 @@ yarn serve
 
 [video address]https://www.bilibili.com/video/BV1CE411H7bQ
 
-### first section
+1. first section
 
 ```
 mkdir ginessential
@@ -133,4 +145,48 @@ go get -u gorm.io/driver/sqlite
 
 ```
 
-### second section
+2. second section
+
+3. 封装统一的请求返回格式
+
+```
+package response
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// {
+// 	code: 20001,
+// 	data: XXX,
+// 	msg: XXX
+// }
+
+func Response(ctx *gin.Context, httpStatus int, code int, data gin.H, msg string) {
+	ctx.JSON(httpStatus, gin.H{
+		"code": code,
+		"data": data,
+		"msg":  msg,
+	})
+}
+
+// 业务成功
+func Success(ctx *gin.Context, data gin.H, msg string) {
+	Response(ctx, http.StatusOK, 200, data, msg)
+}
+
+//业务失败
+func Fail(ctx *gin.Context, data gin.H, msg string) {
+	Response(ctx, http.StatusOK, 400, data, msg)
+}
+
+```
+
+7. 统一配置管理
+
+```
+// viper module
+
+```
