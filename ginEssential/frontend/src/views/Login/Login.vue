@@ -74,6 +74,9 @@
 </template>
 
 <script>
+// import storageService from "@/utils/storageService";
+import { mapActions } from "vuex";
+// import api from "@/api/user";
 // import {
 //   required,
 //   minLength,
@@ -107,13 +110,62 @@ export default {
   //   },
   // },
   methods: {
+    ...mapActions("userModule", { userLogin: "login" }),
     login (event) {
       event.preventDefault();
-      if (this.user.telephone.length !== 11) {
+      if (this.user.telephone && this.user.telephone.length !== 11) {
         this.showTelephoneValidate = false;
         return;
       }
-      alert(JSON.stringify(this.user));
+      console.log(this.user);
+
+      this.userLogin(this.user)
+        .then(() => {
+          this.$router.replace({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log("err:", err.response.data.msg);
+          this.$bvToast.toast(err.response.data.msg, {
+            title: err.response.data.msg,
+            variant: "danger",
+            solid: true,
+          });
+        });
+
+      // api
+      //   .login({ ...this.user })
+      //   .then((res) => {
+      //     console.log(res.data);
+
+      //     // save token
+      //     // localStorage.setItem("token", res.data.data.token);
+      //     // storageService.set(storageService.USER_TOKEN, res.data.data.token);
+      //     this.$store.commit("userModule/SET_TOKEN", res.data.data.token);
+      //     api.info().then((response) => {
+      //       console.log(response.data);
+      //       // save user info
+      //       // storageService.set(
+      //       //   storageService.USER_INFO,
+      //       //   JSON.stringify(res.data.data.user)
+      //       // );
+
+      //       this.$store.commit(
+      //         "userModule/SET_USERINFO",
+      //         response.data.data.user
+      //       );
+      //       // Jump to home page
+      //       this.$router.replace({ name: "Home" });
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     console.log("err:", err.response.data.msg);
+      //     this.$bvToast.toast(err.response.data.msg, {
+      //       title: err.response.data.msg,
+      //       variant: "danger",
+      //       solid: true,
+      //     });
+      //   });
+      // alert(JSON.stringify(this.user));
     },
     onSubmit (event) {
       event.preventDefault();

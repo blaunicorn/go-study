@@ -1,6 +1,6 @@
 // ginEssential api mock
 
-POST http://localhost:8080/api/auth/register HTTP/1.1
+POST http://localhost:8081/api/auth/register HTTP/1.1
 content-type: application/x-www-form-urlencoded
 
 telephone=11111111111
@@ -9,7 +9,7 @@ telephone=11111111111
 
 ###
 
-POST http://localhost:8080/api/auth/login HTTP/1.1
+POST http://localhost:8081/api/auth/login HTTP/1.1
 content-type: application/x-www-form-urlencoded
 
 telephone=11111111111
@@ -17,23 +17,32 @@ telephone=11111111111
 
 ###
 
-GET   http://localhost:8080/api/auth/info/ HTTP/1.1
+GET   http://localhost:8081/api/auth/info/ HTTP/1.1
 content-type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjEsImV4cCI6MTYzNjQyNTI2OSwiaWF0IjoxNjM1ODIwNDY5LCJpc3MiOiJvY2VhbmxlYXJuLnRlY2giLCJzdWIiOiJ1c2VyIHRva2VuIn0.NpkbXBS2BbKAZJVaR79YRAATgYqJllYiV8Be-0HmioQ
 ###
 
 
 
-POST http://localhost:8082/user/ HTTP/1.1
+POST http://localhost:8081/categories/ HTTP/1.1
 content-type: application/json
 
 {
     # "id": 31,
-    "username": "test022"
+    "name": "aaa"
 }
 ###
 
-PATCH  http://localhost:8082/user/06/ HTTP/1.1
+PUT http://localhost:8081/categories/1 HTTP/1.1
+content-type: application/json
+
+{
+    # "id": 31,
+    "name": "ceshi2"
+}
+###
+
+GET   http://localhost:8081/categories/1 HTTP/1.1
 content-type: application/json
 
 {
@@ -42,7 +51,7 @@ content-type: application/json
 }
 ###
 
-DELETE  http://localhost:8082/user/4/ HTTP/1.1
+DELETE  http://localhost:8081/categories/1 HTTP/1.1
 content-type: application/json
 
 ###

@@ -74,6 +74,8 @@
 </template>
 
 <script>
+// import storageService from "@/utils/storageService";
+// import api from "@/api/user";
 // import {
 //   required,
 //   minLength,
@@ -81,6 +83,9 @@
 //   between,
 // } from "vuelidate/lib/validators";
 // const telephoneValidator = (value) => /^1[3|4|5|7]\d{9}$/.test(value);
+
+// vuex mode 2 mapMutations
+import { mapMutations, mapActions } from "vuex";
 export default {
   data () {
     return {
@@ -116,6 +121,9 @@ export default {
   //   },
   // },
   methods: {
+    // vuex  mode1 1 mapMutations
+    ...mapMutations("userModule", ["SET_TOKEN", "SET_USERINFO"]),
+    ...mapActions("userModule", { userRegister: "register" }),
     register () {
       // event.preventDefault();
       if (!this.user.telephone || this.user.telephone.length !== 11) {
@@ -127,15 +135,12 @@ export default {
       if (!this.user.password || this.user.password.length < 6) {
         return;
       }
-      const api = "http://localhost:8081/api/auth/register";
-      this.axios
-        .post(api, { ...this.user })
-        .then((res) => {
-          console.log(res.data);
+      // const api = "http://localhost:8081/api/auth/register";
+      // this.axios.post(api, { ...this.user })
 
-          // save token
-          localStorage.setItem("token", res.data.data.token);
-          // Jump to home page
+      // vuex  mode 2 mapActions
+      this.userRegister(this.user)
+        .then(() => {
           this.$router.replace({ name: "Home" });
         })
         .catch((err) => {
@@ -146,6 +151,61 @@ export default {
             solid: true,
           });
         });
+      // vuex  mode 1 mapActions
+      // this.$store
+      //   .dispatch("userModule/register", this.user)
+      //   .then(() => {
+      //     this.$router.replace({ name: "Home" });
+      //   })
+      //   .catch((err) => {
+      //     console.log("err:", err.response.data.msg);
+      //     this.$bvToast.toast(err.response.data.msg, {
+      //       title: err.response.data.msg,
+      //       variant: "danger",
+      //       solid: true,
+      //     });
+      //   });
+
+      // vuex  mode1 2 mapMutations
+      // api
+      //   .register({ ...this.user })
+      //   .then((res) => {
+      //     console.log(res.data);
+
+      //     // save token
+      //     // localStorage.setItem("token", res.data.data.token);
+      //     // storageService.set(storageService.USER_TOKEN, res.data.data.token);
+      //     console.log(this.$store);
+      //     this.$store.commit("userModule/SET_TOKEN", res.data.data.token);
+
+      //     this.SET_TOKEN(res.data.data.token);
+
+      //     return api.info();
+      //   })
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     // save user info
+      //     // storageService.set(
+      //     //   storageService.USER_INFO,
+      //     //   JSON.stringify(response.data.data.user)
+      //     // );
+      //     this.$store.commit(
+      //       "userModule/SET_USERINFO",
+      //       response.data.data.user
+      //     );
+
+      //     this.SET_USERINFO(response.data.data.user);
+      //     // Jump to home page
+      //     this.$router.replace({ name: "Home" });
+      //   })
+      //   .catch((err) => {
+      //     console.log("err:", err.response.data.msg);
+      //     this.$bvToast.toast(err.response.data.msg, {
+      //       title: err.response.data.msg,
+      //       variant: "danger",
+      //       solid: true,
+      //     });
+      //   });
       // alert(JSON.stringify(this.user));
     },
     onSubmit (event) {

@@ -275,3 +275,376 @@ Vue.prototype.axios = axios;
 Vue.prototype.qs = Qs;
 
 ```
+
+```
+    register () {
+      // event.preventDefault();
+      if (!this.user.telephone || this.user.telephone.length !== 11) {
+        this.showTelephoneValidate = true;
+        return;
+      } else {
+        this.showTelephoneValidate = false;
+      }
+      if (!this.user.password || this.user.password.length < 6) {
+        return;
+      }
+      const api = "http://localhost:8081/api/auth/register";
+      this.axios
+        .post(api, { ...this.user })
+        .then((res) => {
+          console.log(res.data);
+
+          // save token
+          localStorage.setItem("token", res.data.data.token);
+          // Jump to home page
+          this.$router.replace({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log("err:", err.response.data.msg);
+          this.$bvToast.toast(err.response.data.msg, {
+            title: err.response.data.msg,
+            variant: "danger",
+            solid: true,
+          });
+        });
+      // alert(JSON.stringify(this.user));
+    },
+```
+
+13. axios 封装
+
+```
+// frontend\src\utils\request.js
+import axios from "axios";
+import storageService from "./storageService";
+const service = axios.create({
+  baseURL: process.env.VUE_APP_BASE_URL,
+  timeout: 5000,
+  headers: {
+    "X-Custom-Header":
+      "Bearer " + storageService.get(storageService.USER_TOKEN),
+  },
+
+});
+service.interceptors.request.use(
+  function (config) {
+    // do something before request is sent
+    Object.assign(config.headers, {
+      Authorization: "Bearer " + storageService.get(storageService.USER_TOKEN),
+    });
+    return config;
+  },
+  function (error) {
+    // do something with request error
+    return Promise.reject(error);
+  }
+);
+export default service;
+
+```
+
+```
+// frontend\src\utils\storageService.js
+// localstroage service
+
+const PREFIX = "ginessential_";
+
+// user module
+const USER_PREFIX = `${PREFIX}user_`;
+const USER_TOKEN = `${USER_PREFIX}token`;
+const USER_INFO = `${USER_PREFIX}info`;
+
+// save function
+const set = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+// read function
+const get = (key) => {
+  return localStorage.getItem(key);
+};
+
+export default {
+  set,
+  get,
+  USER_INFO,
+  USER_TOKEN,
+};
+
+```
+
+```
+// frontend\src\views\Register\Register.vue
+      api
+        .register({ ...this.user })
+        .then((res) => {
+          console.log(res.data);
+
+          // save token
+          // localStorage.setItem("token", res.data.data.token);
+          storageService.set(storageService.USER_TOKEN, res.data.data.token);
+          // Jump to home page
+          this.$router.replace({ name: "Home" });
+        })
+```
+
+14. 使用 vuex 重构 login 页面数据
+
+```
+// frontend\src\views\Layout\Navbar.vue
+<script>
+// import storageService from "@/utils/storageService";
+// Mode2  mapState
+import { mapState } from "vuex";
+
+export default {
+  computed: {
+    userInfo () {
+      // return JSON.parse(storageService.get(storageService.USER_INFO));
+
+      // mode 1 this.$store
+      // console.log("userInfo:", this.$store.state.userModule.userInfo);
+      return this.$store.state.userModule.userInfo;
+    },
+    // mode mapState
+    ...mapState({ userInfo1: (state) => state.userModule.userInfo }),
+  },
+};
+</script>
+
+```
+
+```
+// frontend\src\views\Register\Register.vue
+    // vuex  mode1 1 mapMutations
+    ...mapMutations("userModule", ["SET_TOKEN", "SET_USERINFO"]),
+
+    register () {
+      // event.preventDefault();
+      if (!this.user.telephone || this.user.telephone.length !== 11) {
+        this.showTelephoneValidate = true;
+        return;
+      } else {
+        this.showTelephoneValidate = false;
+      }
+      if (!this.user.password || this.user.password.length < 6) {
+        return;
+      }
+      // const api = "http://localhost:8081/api/auth/register";
+      // this.axios.post(api, { ...this.user })
+      api
+        .register({ ...this.user })
+        .then((res) => {
+          console.log(res.data);
+
+          // save token
+          // localStorage.setItem("token", res.data.data.token);
+          // storageService.set(storageService.USER_TOKEN, res.data.data.token);
+          console.log(this.$store);
+          this.$store.commit("userModule/SET_TOKEN", res.data.data.token);
+
+          this.SET_TOKEN(res.data.data.token);
+
+          return api.info();
+        })
+        .then((response) => {
+          console.log(response.data);
+          // save user info
+          // storageService.set(
+          //   storageService.USER_INFO,
+          //   JSON.stringify(response.data.data.user)
+          // );
+          this.$store.commit(
+            "userModule/SET_USERINFO",
+            response.data.data.user
+          );
+
+          this.SET_USERINFO(response.data.data.user);
+          // Jump to home page
+          this.$router.replace({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log("err:", err.response.data.msg);
+          this.$bvToast.toast(err.response.data.msg, {
+            title: err.response.data.msg,
+            variant: "danger",
+            solid: true,
+          });
+        });
+      // alert(JSON.stringify(this.user));
+    },
+```
+
+```
+// frontend\src\store\module\user.js
+    ...mapActions("userModule", { userRegister: "register" }),
+    ...
+// vuex  mode1 2 mapActions
+      // vuex  mode 2 mapActions
+      this.userRegister(this.user)
+        .then(() => {
+          this.$router.replace({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log("err:", err.response.data.msg);
+          this.$bvToast.toast(err.response.data.msg, {
+            title: err.response.data.msg,
+            variant: "danger",
+            solid: true,
+          });
+        });
+```
+
+16. 前端登陆和 router navigation guards
+
+```
+// frontend\src\store\module\user.js
+    logout ({ commit }) {
+      // clear token
+      commit("SET_TOKEN", "");
+      // storageService.set(storageService.USER_TOKEN, "");
+      // clear userinfo
+      commit("SET_USERINFO", "");
+      // storageService.set(storageService.USER_INFO, "");
+    },
+```
+
+```
+// frontend\src\router\index.js
+router.beforeEach((to, from, next) => {
+  if (to.meta.auth) {
+    // 判断是否需要登陆权限
+    // 判断用户是否登陆
+    if (store.state.userModule.token) {
+      // 这里还需要判断token的有效性，比如有没有过期，需要后台发放token的时候，带上token的有效期
+      // 如果token无效，需要请求token
+      next();
+    } else {
+      next({ name: "Login" });
+    }
+  } else {
+    next();
+  }
+});
+```
+
+17. 文章分类
+
+```
+// server\model\category.go
+// 根据约定规范，一般文件名应该采取小写字母+“_”方式。
+package model
+
+import "gorm.io/gorm"
+
+type Category struct {
+	gorm.Model
+	ID   uint   `json:"id"`
+	Name string `json:"name" gorm:"type:varchar(50);not null;unique"`
+	// CreatedAt time.Time `json:"created_at"`
+	// UpdatedAt time.Time `json:"updated_at"`
+}
+
+```
+
+```
+// server\controller\category_controller.go
+package controller
+
+import (
+	"strconv"
+
+	"github.com/blaunicorn/oceanlearn.teach/ginessential/common"
+	"github.com/blaunicorn/oceanlearn.teach/ginessential/model"
+	"github.com/blaunicorn/oceanlearn.teach/ginessential/response"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+type ICategoryController interface {
+	RestController
+}
+
+type CategoryController struct {
+	DB *gorm.DB
+}
+
+func NewCategoryController() CategoryController {
+	db := common.GetDB()
+
+	db.AutoMigrate(model.Category{})
+
+	return CategoryController{DB: db}
+}
+
+func (c CategoryController) Create(ctx *gin.Context) {
+	var requestCategory model.Category
+	ctx.Bind(&requestCategory)
+	if requestCategory.Name == "" {
+		response.Fail(ctx, nil, "Data validation error, category name is required")
+	}
+	c.DB.Create(&requestCategory)
+	response.Success(ctx, gin.H{"category": requestCategory}, "success")
+
+}
+func (c CategoryController) Update(ctx *gin.Context) {
+	// 绑定body中的参数
+	var requestCategory model.Category
+	ctx.Bind(&requestCategory)
+	if requestCategory.Name == "" {
+		response.Fail(ctx, nil, "Data validation error, category name is required")
+	}
+
+	// 获取path中的参数
+	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
+	var updateCategory model.Category
+	if c.DB.First(&updateCategory, categoryId).RowsAffected < 1 {
+		response.Fail(ctx, nil, "category is not esint")
+
+	}
+
+	// 更新分类
+	// 方式1 map
+	// 方式2 结构体
+	// 方式3 name value
+	c.DB.Model(&updateCategory).Update("name", requestCategory.Name)
+	response.Success(ctx, gin.H{"category": updateCategory}, "success")
+}
+func (c CategoryController) Show(ctx *gin.Context) {
+	// 获取path中的参数
+	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
+	var category model.Category
+	if c.DB.First(&category, categoryId).RowsAffected < 1 {
+		response.Fail(ctx, nil, "category is not esint")
+	}
+	response.Success(ctx, gin.H{"category": category}, "success")
+}
+func (c CategoryController) Delete(ctx *gin.Context) {
+	// 获取path中的参数
+	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
+	var category model.Category
+	if c.DB.First(&category, categoryId).RowsAffected < 1 {
+		response.Fail(ctx, nil, "category is not esint")
+		return
+	}
+	if err := c.DB.Delete(&model.Category{}, categoryId).Error; err != nil {
+		response.Fail(ctx, gin.H{"err": err}, "删除失败")
+		return
+	}
+	response.Success(ctx, nil, "delete success")
+}
+
+```
+
+18. 文章分类重构
+
+```
+// 修改为自动数据验证
+
+```
+
+19. 文章 api
+
+```
+
+```

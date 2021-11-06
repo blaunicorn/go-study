@@ -263,10 +263,19 @@ func Register(ctx *gin.Context) {
 
 func Login(ctx *gin.Context) {
 	DB := common.GetDB()
-	// get parameters
-	telephone := ctx.PostForm("telephone")
-	password := ctx.PostForm("password")
-	fmt.Println("form:", telephone, password)
+
+	var requestUser = model.User{}
+	ctx.Bind(&requestUser)
+	fmt.Println(&requestUser)
+
+	//get Json parameters
+	telephone := requestUser.Telephone
+	password := requestUser.Password
+
+	// get Form parameters
+	// telephone := ctx.PostForm("telephone")
+	// password := ctx.PostForm("password")
+	// fmt.Println("form:", telephone, password)
 	// data validation
 	if len(telephone) != 11 {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{

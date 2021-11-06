@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -13,12 +14,12 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Get authorization header object
 		tokenString := ctx.GetHeader("Authorization")
-
+		fmt.Println(tokenString)
 		// validate token formate
-		if tokenString == "" || strings.HasPrefix(tokenString, "Bearer") {
+		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer") {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"code": 401,
-				"msg":  "Insufficient permissions",
+				"msg":  "Insufficient permissions1",
 			})
 			ctx.Abort()
 			return
@@ -29,7 +30,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		if err != nil || !token.Valid {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"code": 401,
-				"msg":  "Insufficient permissions",
+				"msg":  "Insufficient permissions2",
 			})
 			ctx.Abort()
 			return
