@@ -641,10 +641,13 @@ func (c CategoryController) Delete(ctx *gin.Context) {
 ```
 // 修改为自动数据验证
 
+// server\controller\category_controller.go
+
 ```
 
 19. 文章 api
 
 ```
-
+// server\model\post.go
+// 文章api
 ```

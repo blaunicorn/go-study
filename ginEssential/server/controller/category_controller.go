@@ -56,13 +56,14 @@ func (c CategoryController) Create(ctx *gin.Context) {
 	// c.DB.Create(&categroy)
 	// response.Success(ctx, gin.H{"category": requestCategory}, "success")
 
-	// 18节修改开始
+	// 18节修改开始 此时 c.DB.Model 将失效
 	// var category *model.Category
 	// var err error
 	category, err := c.Repository.Create(requestCategory.Name)
 	if err != nil {
 		response.Fail(ctx, nil, "创建失败")
-		return
+		panic(err)
+		// return
 	}
 	response.Success(ctx, gin.H{"category": category}, "success")
 	// 18节修改 结束
@@ -80,42 +81,78 @@ func (c CategoryController) Update(ctx *gin.Context) {
 
 	// 获取path中的参数
 	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
-	var updateCategory model.Category
-	if c.DB.First(&updateCategory, categoryId).RowsAffected < 1 {
-		response.Fail(ctx, nil, "category is not esint")
+	// 18节前
+	// var updateCategory model.Category
+	// if c.DB.First(&updateCategory, categoryId).RowsAffected < 1 {
+	// 	response.Fail(ctx, nil, "category is not esint")
+	// 	return
+	// }
+
+	// // 更新分类
+	// // 方式1 map
+	// // 方式2 结构体
+	// // 方式3 name value
+	// c.DB.Model(&updateCategory).Update("name", requestCategory.Name)
+	// response.Success(ctx, gin.H{"category": updateCategory}, "success")
+
+	// 18节修改开始 此时 c.DB.Model 将失效
+	updateCategory, err := c.Repository.SelectById(categoryId)
+	if err != nil {
+		response.Fail(ctx, nil, "分类不存在")
 		return
 	}
-
-	// 更新分类
-	// 方式1 map
-	// 方式2 结构体
-	// 方式3 name value
-	c.DB.Model(&updateCategory).Update("name", requestCategory.Name)
+	updateCategory, err = c.Repository.Update(*updateCategory, requestCategory.Name)
+	if err != nil {
+		panic(err)
+	}
 	response.Success(ctx, gin.H{"category": updateCategory}, "success")
+	// 18节修改 结束
 }
 
 func (c CategoryController) Show(ctx *gin.Context) {
 	// 获取path中的参数
 	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
-	var category model.Category
-	if c.DB.First(&category, categoryId).RowsAffected < 1 {
+
+	// 18节修改前
+	// var category model.Category
+	// if c.DB.First(&category, categoryId).RowsAffected < 1 {
+	// 	response.Fail(ctx, nil, "category is not esint")
+	// 	return
+	// }
+	// response.Success(ctx, gin.H{"category": category}, "success")
+
+	// 18节修改开始 此时 c.DB.Model 将失效
+	category, err := c.Repository.SelectById(categoryId)
+	if err != nil {
 		response.Fail(ctx, nil, "category is not esint")
 		return
 	}
 	response.Success(ctx, gin.H{"category": category}, "success")
+	// 18节修改 结束
 }
 
 func (c CategoryController) Delete(ctx *gin.Context) {
 	// 获取path中的参数
 	categoryId, _ := strconv.Atoi(ctx.Params.ByName("id"))
-	var category model.Category
-	if c.DB.First(&category, categoryId).RowsAffected < 1 {
+
+	// 18节修改前
+	// var category model.Category
+	// if c.DB.First(&category, categoryId).RowsAffected < 1 {
+	// 	response.Fail(ctx, nil, "category is not esint")
+	// 	return
+	// }
+	// if err := c.DB.Delete(&model.Category{}, categoryId).Error; err != nil {
+	// 	response.Fail(ctx, gin.H{"err": err}, "删除失败")
+	// 	return
+	// }
+	// response.Success(ctx, nil, "delete success")
+
+	// 18节修改开始 此时 c.DB.Model 将失效
+
+	if err := c.Repository.DeleteById(categoryId); err != nil {
 		response.Fail(ctx, nil, "category is not esint")
 		return
 	}
-	if err := c.DB.Delete(&model.Category{}, categoryId).Error; err != nil {
-		response.Fail(ctx, gin.H{"err": err}, "删除失败")
-		return
-	}
-	response.Success(ctx, nil, "delete success")
+	response.Success(ctx, nil, "success")
+	// 18节修改 结束
 }

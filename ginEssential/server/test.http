@@ -1,9 +1,10 @@
 // ginEssential api mock
 
 POST http://localhost:8081/api/auth/register HTTP/1.1
-content-type: application/x-www-form-urlencoded
+# content-type: application/x-www-form-urlencoded
+content-type: application/json
 
-telephone=11111111111
+telephone=11111111119
 &password=admin123
 &name=admin
 
@@ -56,6 +57,17 @@ content-type: application/json
 
 ###
 
+POST http://localhost:8081/posts/ HTTP/1.1
+content-type: application/json
+Authorization: bearer Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjEsImV4cCI6MTYzNjQyNTI2OSwiaWF0IjoxNjM1ODIwNDY5LCJpc3MiOiJvY2VhbmxlYXJuLnRlY2giLCJzdWIiOiJ1c2VyIHRva2VuIn0.NpkbXBS2BbKAZJVaR79YRAATgYqJllYiV8Be-0HmioQ
+
+{
+    "category_id": 1,
+    "title": "aaa",
+    "head_img":"image",
+    "content":"cccc"
+}
+###
 GET   http://localhost:8082/user/30/ HTTP/1.1
 content-type: application/json
 ###
