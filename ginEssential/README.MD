@@ -29,13 +29,14 @@
 
 > 先确保你电脑上正确安装了 golang 环境
 
-从git@github.com:blaunicorn/go-study.git master 分支拉取后端 golang 代码
+从git@github.com:blaunicorn/go-study.git main 分支拉取后端 golang 代码
 
 ```shell
 # 拉取代码
-git clone -b master https://github.com/kotlindev/gin-demo.git backend
+git clone -b main https://github.com/blaunicorn/go-study.git
+///ginEssential/server
 # 进入项目目录
-cd  backend
+cd  server
 # 安装项目依赖
 go get
 ```
@@ -49,9 +50,9 @@ datasource:
   driverName: mysql
   host: 127.0.0.1
   port: 3306
-  database: api
-  username: pan
-  password: www.phy.xyz
+  database: gin_essential
+  username: gin_essential
+  password: ******
   charset: utf8
   loc: Asia/Shanghai
 ```
@@ -65,18 +66,7 @@ go run routes.go main.go
 如果看到命令行终端输出以下路由信息，代表项目运行正常。如果不正常，检查一下数据库地址还有账号密码是否正确，同时确保运行的端口没有被占用
 
 ```
-[GIN-debug] POST   /api/auth/register        --> jkdev.cn/api/controller.Register (5 handlers)
-[GIN-debug] POST   /api/auth/login           --> jkdev.cn/api/controller.Login (5 handlers)
-[GIN-debug] GET    /api/auth/info            --> jkdev.cn/api/controller.Info (6 handlers)
-[GIN-debug] POST   /categories               --> jkdev.cn/api/controller.ICategoryController.Create-fm (5 handlers)
-[GIN-debug] PUT    /categories/:id           --> jkdev.cn/api/controller.ICategoryController.Update-fm (5 handlers)
-[GIN-debug] GET    /categories/:id           --> jkdev.cn/api/controller.ICategoryController.Show-fm (5 handlers)
-[GIN-debug] DELETE /categories/:id           --> jkdev.cn/api/controller.ICategoryController.Delete-fm (5 handlers)
-[GIN-debug] POST   /posts                    --> jkdev.cn/api/controller.IPostController.Create-fm (6 handlers)
-[GIN-debug] PUT    /posts/:id                --> jkdev.cn/api/controller.IPostController.Update-fm (6 handlers)
-[GIN-debug] GET    /posts/:id                --> jkdev.cn/api/controller.IPostController.Show-fm (6 handlers)
-[GIN-debug] DELETE /posts/:id                --> jkdev.cn/api/controller.IPostController.Delete-fm (6 handlers)
-[GIN-debug] POST   /posts/page/list          --> jkdev.cn/api/controller.IPostController.PageList-fm (6 handlers)
+
 [GIN-debug] Listening and serving HTTP on :8081
 ```
 
@@ -88,9 +78,10 @@ go run routes.go main.go
 
 ```shell
 # 拉取代码
-git clone -b vue https://github.com/kotlindev/gin-demo.git vue
+git clone -b vue https://github.com/blaunicorn/go-study.git
+/ginEssential/frontend
 # 进入项目目录
-cd  vue
+cd  frontend
 # 安装项目依赖
 yarn install
 ```
