@@ -1,0 +1,6 @@
+{
+  "type": "tcp_client",
+  "ip": "192.168.101.126",
+  "port": 8080,
+  "time_interval(s)": 10
+}

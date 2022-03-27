@@ -1,5 +1,27 @@
 # go-study
 
+### 学习ginblog项目，同时改造成微信小程序-生活助手的后端
+F:\code-tencent\go\gin-LifeAssistant
+简介：gin+vue+uniapp 全栈博客+微信小程序-生活助手
+视频教程：https://www.bilibili.com/video/BV1AA411v7e6
+
+
+### 8 小时转职 Golang 工程师(如果你想低成本学习 Go 语言)
+
+https://www.bilibili.com/video/BV1gf4y1r79E?p=2&spm_id_from=pageDriver
+F:\code-tencent\go\eight-hour
+基础快速通过和即时通信系统实战案例学习
+
+### Golang Web 编程，array 数组、Slice 切片、Map 集合、Struct 结构体
+
+F:\code-tencent\go\golang-demo
+
+### 循序渐进的 Go 微服务系列教程 - OceanLearn (1-4)
+
+20220105 开始学习
+F:\code-tencent\go\oceanmicro
+https://www.bilibili.com/video/BV1zz411v7ye
+
 ### Go 语言 Gin+Vue 前后端分离实战 - OceanLearn
 
 20211030 开始学习
