@@ -15,7 +15,7 @@ var (
 	DbUser     string
 	Dbpassword string
 	DbName     string
-	charset    string
+	DbCharset  string
 )
 
 func init() {
@@ -33,11 +33,11 @@ func LoadServer(file *ini.File) {
 }
 
 func LoadDataBase(file *ini.File) {
-	Db = file.Section("server").Key("Db").MustString("mysql")
-	DbHost = file.Section("server").Key("DbHost").MustString("localhost")
-	DbPort = file.Section("server").Key("DbPort").MustString("3306")
-	DbUser = file.Section("server").Key("DbUser").MustString("gin_essential")
-	Dbpassword = file.Section("server").Key("Dbpassword").MustString("rr4bsaDkbeSwj2tb")
-	DbName = file.Section("server").Key("DbName").MustString("gin_essential")
-	charset = file.Section("server").Key("charset").MustString("utf8")
+	Db = file.Section("database").Key("Db").MustString("mysql")
+	DbHost = file.Section("database").Key("DbHost").MustString("localhost")
+	DbPort = file.Section("database").Key("DbPort").MustString("3306")
+	DbUser = file.Section("database").Key("DbUser").MustString("gin_essential")
+	Dbpassword = file.Section("database").Key("Dbpassword").MustString("rr4bsaDkbeSwj2tb")
+	DbName = file.Section("database").Key("DbName").MustString("gin_essential")
+	DbCharset = file.Section("database").Key("charset").MustString("utf8")
 }
