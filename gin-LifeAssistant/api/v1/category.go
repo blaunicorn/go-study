@@ -96,7 +96,7 @@ func (p CategoryController) List(ctx *gin.Context) {
 		"age":       ">",
 	}
 	for key, value := range mapValue {
-		if queryValue, isExist := ctx.GetQuery(key); isExist == true {
+		if queryValue, isExist := ctx.GetQuery(key); isExist {
 			DB = DB.Where(key+" "+value+" ?", queryValue)
 		}
 	}
