@@ -1,0 +1,203 @@
+package v1
+
+import (
+	"fmt"
+	"gin-vue-lifeassistant/model"
+	"gin-vue-lifeassistant/responsemsg"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+// 查询分类是否存在
+// 添加分类
+// 根据id查询单个分类
+// 根据id查询单个分类下的文章
+// 查询分类列表
+// 编辑修改分类
+// 删除分类
+type ICategoryController interface {
+	Create(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+	DeleteList(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Show(ctx *gin.Context)
+	List(ctx *gin.Context)
+}
+
+type CategoryController struct {
+	DB *gorm.DB
+}
+
+func NewCategoryController() ICategoryController {
+	db := model.GetDB()
+	db.AutoMigrate(model.Category{})
+	return CategoryController{DB: db}
+}
+
+// 添加分类
+func (p CategoryController) Create(ctx *gin.Context) {
+	fmt.Println("------")
+	// 从原有Request.Body读取
+	// body的内容只能读取一次，后面在读取都是空的。
+	// 想在中间件中获取body请求参数，记录到日志。如果body只能获取一次
+	// 在c.Request.Body.Read()之后回设body：c.Request.Body = ioutil.NopCloser(bytes.NewReader(buf[:n]))
+	// body, _ := ioutil.ReadAll(ctx.Request.Body)
+	// fmt.Println("---body/--- \r\n " + string(body))
+
+	var requestJson = model.Category{}
+	// 方式一
+	// json.NewDecoder(ctx.Request.Body).Decode(&requestUser)
+	// 方式二
+	// requestJson := make(map[string]interface{})
+	// 方式三
+	ctx.BindJSON(&requestJson)
+	// // requestJson.Name = "aa"
+	fmt.Println(&requestJson)
+	if isAttributeValueExistInCategory(p.DB, "name", requestJson.Name) {
+		responsemsg.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "category name is exist")
+		return
+	}
+
+	// write to basedb
+	requestJson.IsDel = 0
+	p.DB.Create(&requestJson)
+	responsemsg.Success(ctx, gin.H{"category": &requestJson}, "category created success")
+}
+
+// 查询单个分类
+
+func (p CategoryController) Show(ctx *gin.Context) {
+	//get id in path
+	id := ctx.Params.ByName("id")
+	var returnData model.Category
+	if p.DB.Where("id=?", id).First(&returnData).RowsAffected < 1 {
+		responsemsg.Fail(ctx, nil, "user ID does not exist!")
+		return
+	}
+	responsemsg.Success(ctx, gin.H{"category": &returnData}, "category updated success")
+
+}
+
+// 查询分类列表
+func (p CategoryController) List(ctx *gin.Context) {
+
+	// 链式不定参数查询
+	DB := p.DB
+	// if name, isExist := ctx.GetQuery("username"); isExist == true {
+	// 	//模糊查询
+	// 	DB = DB.Where("name like ?", "%"+name+"%")
+	// }
+	// if telephone, isExist := ctx.GetQuery("telephone"); isExist == true {
+
+	// 	DB = DB.Where("telephone = ?", telephone)
+	// }
+
+	// 定义一个map[查询参数] 查询条件 然后根据map 查询，map也可以放在sql数据库中
+	mapValue := map[string]string{
+		"name":      "like",
+		"telephone": "=",
+		"age":       ">",
+	}
+	for key, value := range mapValue {
+		if queryValue, isExist := ctx.GetQuery(key); isExist {
+			DB = DB.Where(key+" "+value+" ? and is_del=0", queryValue)
+		}
+	}
+	// 获取分页参数
+	pageNum, _ := strconv.Atoi(ctx.DefaultQuery("pageNum", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	// desc：降序排列  asc 升序 默认
+	sort := ctx.DefaultQuery("sort", "desc")
+
+	var categorys []model.Category
+
+	DB = DB.Order("created_at " + sort).Offset((pageNum - 1) * pageSize).Limit(pageSize).Find(&categorys)
+
+	// 查询总条数
+	var total int64
+	DB.Model(model.Category{}).Count(&total)
+
+	responsemsg.Success(ctx, gin.H{"data": gin.H{"categorys": categorys, "total": total}}, "success")
+}
+
+// 编辑修改分类
+func (p CategoryController) Update(ctx *gin.Context) {
+	// 忽略密码项
+	// 使用update时，stuct 存在0值不会更新的问题，所以用map更新
+	var data model.Category
+	ctx.ShouldBindJSON(&data)
+	var category = make(map[string]interface {
+	})
+	category["ID"] = ctx.Param("id")
+	category["Name"] = data.Name
+	name := data.Name
+
+	//get id in path
+	Id := ctx.Params.ByName("id")
+
+	if p.DB.Where("id=? and is_del=0", Id).First(&data).RowsAffected < 1 {
+		responsemsg.Fail(ctx, nil, "user ID does not exist!")
+		return
+	}
+
+	if isAttributeValueExistInCategory(p.DB, "name", name) {
+		responsemsg.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "name 存在同名")
+		return
+	}
+	// determine whether the current user is the author of the post
+	// get  user info
+	// user, _ := ctx.Get("user")
+	// userId := user.(model.User).ID
+	// if userId != post.UserId {
+	// 	response.Fail(ctx, nil, "The post does not belong to you. Please do not operate illegally.")
+	// 	return
+	// }
+	// update post
+	// Note that gorm2 needs to be used "Updates" s s s. update multiple attributes.
+	if err := p.DB.Model(&data).Where("id= ? and is_del=0", Id).Updates(&category).Error; err != nil {
+		fmt.Println(err)
+		responsemsg.Fail(ctx, nil, "data updated fail.")
+		return
+	}
+	responsemsg.Success(ctx, gin.H{"category": &category}, "category updated success")
+
+}
+
+// 删除分类
+func (p CategoryController) Delete(ctx *gin.Context) {
+	//get id in path
+	id := ctx.Params.ByName("id")
+	var category model.Category
+	if p.DB.Where("id=? and is_del=0", id).First(&category).RowsAffected < 1 {
+		responsemsg.Fail(ctx, nil, "分类id不存在！")
+		return
+	}
+	// determine whether the current user is the author of the post
+	// get  user info,通过token获取当前用户信息，并判断是否有删除权限
+	// user, _ := ctx.Get("user")
+	// userId := user.(model.User).ID
+	// if userId != post.UserId {
+	// 	response.Fail(ctx, nil, "The post does not belong to you. Please do not operate illegally.")
+	// 	return
+	// }
+	category.IsDel = 1
+	p.DB.Where("id=? and is_del=0", id).Updates(&category)
+	// p.DB.Where("id=?", id).Delete(&user)
+	responsemsg.Success(ctx, gin.H{"categoryId": id}, "category delete success")
+
+}
+
+// 删除多个分类
+func (p CategoryController) DeleteList(ctx *gin.Context) {
+
+}
+
+// 查询分类属性的值是否在数据库中存在
+func isAttributeValueExistInCategory(db *gorm.DB, AttributeName string, AttributeValue string) bool {
+	var category model.Category
+	db.Where(AttributeName+"=? and is_del=0", AttributeValue).First(&category)
+	return category.ID != 0
+}
