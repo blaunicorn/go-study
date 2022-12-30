@@ -1,0 +1,27 @@
+##  api mock REST Client
+
+### 定义一个变量
+
+@testurl = http://httpbin.org/cookies/set?name=value
+
+GET  {{testurl}}
+
+###
+@testHttp = http://localhost:8081/api/v1
+
+
+# 测试ping
+GET  {{testHttp}}/ping
+
+ # 用户登录
+#  @name loginAdmin
+POST   {{testHttp}}/login HTTP/1.1
+# content-type: application/x-www-form-urlencoded
+content-type: application/json
+
+# telephone=11111111111
+# &password=admin123
+{"telephone":"111111111110",
+"password":"admin123"}
+
+###

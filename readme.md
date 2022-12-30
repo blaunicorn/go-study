@@ -1,5 +1,15 @@
 # go-study
 
+
+2022-12-30 跟着视频复习go语言
+[go-study-by-qimiao](https://www.bilibili.com/video/BV1Q7411K7ij/)
+
+
+
+### examination-question-query
+试题查询助手
+
+
 ### 学习ginblog项目，同时改造成微信小程序-生活助手的后端
 F:\code-tencent\go\gin-LifeAssistant
 简介：gin+vue+uniapp 全栈博客+微信小程序-生活助手
