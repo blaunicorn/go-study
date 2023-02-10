@@ -19,6 +19,11 @@ curl -H "Content-Type:application/json" -X POST --data '{"query":"维多利亚�
 
 ###
 
+// 测试api
+GET {{testHttp}}/test HTTP/1.1
+
+###
+
 // 动态路由
 GET {{testHttp}}/uri/003 HTTP/1.1
 
@@ -88,7 +93,33 @@ Content-Type: image/png
 < ./001.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
+###
+# 上传多个文件
+POST   {{testHttp}}/uploads HTTP/1.1
+# 设置 Content-Type 和 boundary
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
+# 非文件类型的form data, 参数需要空一行
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="name"
+
+title1
+# 文件类型等描述信息
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="002.jpg"
+Content-Type: image/jpeg
+
+# 需要上传的文件的路径
+< ./002.jpg
+
+# 文件类型等描述信息
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="003.jpg"
+Content-Type: image/jpeg
+
+# 需要上传的文件的路径
+< ./003.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
 

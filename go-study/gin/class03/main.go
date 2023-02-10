@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,18 @@ func main() {
 		// 给前端返回文件
 		c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment;filename=%s", "文件名.png"))
 		c.File("./uploadFile/" + file.Filename)
+	})
+
+	// 多文件上传
+	r.POST("/api/uploads", func(c *gin.Context) {
+		form, _ := c.MultipartForm()
+		files := form.File["file"]
+		fmt.Println(files)
+		for _, file := range files {
+			log.Println(file.Filename)
+			c.SaveUploadedFile(file, "./uploadFile/"+file.Filename)
+		}
+
 	})
 	r.Run(":8081")
 }
